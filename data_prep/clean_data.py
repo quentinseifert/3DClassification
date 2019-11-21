@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 # define function to remove and replace unwanted signs in files
 def clean_trees(path):
@@ -25,6 +26,7 @@ for label in label_list:
     for species in species_list:
         path = os.path.join('../data', label, species)
         clean_trees(path)
+
 
 
 

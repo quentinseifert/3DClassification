@@ -23,9 +23,6 @@ def get_data(directory):
             for i in range(0, len(lines)):
                 lines[i] = [float(x) for x in lines[i].split()]
 
-            if len(lines[0]) == 1:
-                lines = lines[1:]
-
             lines = random.sample(lines, 2048)
             lines = np.array(lines)[:,:3]
             trees.append(lines)
@@ -40,18 +37,17 @@ n_trees, n_counts = get_data('../data/Nadelbäume')
 l_trees, l_counts = get_data('../data/Laubbäume')
 
 
-file_list = os.listdir('../data/laubbäume/unsortiert')
 
 
-# import trees from 'unsortiert'
-counts = []
-for file in file_list:
-    file_path = os.path.join('../data/laubbäume/unsortiert', file)
 
-    with open(file_path, 'r+') as f:
-        lines = [line.rstrip() for line in f]
 
-    counts.append(len(lines) >= 2048)
+
+
+
+
+
+    
+
 
 
 
