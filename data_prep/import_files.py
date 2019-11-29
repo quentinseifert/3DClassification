@@ -6,7 +6,7 @@ from sklearn.preprocessing import LabelBinarizer
 import h5py
 
 
-def get_data(directory):
+def get_data(directory, n_points=2048, k=1):
     label_list = os.listdir(directory)
     trees = []
     counts = []
@@ -15,7 +15,7 @@ def get_data(directory):
 
         path = os.path.join(directory, label)
         file_list = os.listdir(path)
-        counts.append(len(file_list))
+        counts.append(len(file_list) * k)
 
         for file in file_list:
             file_path = os.path.join(path, file)
@@ -25,10 +25,12 @@ def get_data(directory):
 
             for i in range(0, len(lines)):
                 lines[i] = [float(x) for x in lines[i].split()]
-
-            lines = random.sample(lines, 2048)
-            lines = np.array(lines)[:, :3]
-            trees.append(lines)
+            
+            
+            for i in range(k):
+                lines_new = random.sample(lines, n_points)
+                lines_new = np.array(lines_new)[:, :3]
+                trees.append(lines_new)
 
         data = np.array(trees)
 
@@ -36,12 +38,12 @@ def get_data(directory):
 
 
 # import data from files
-n_trees, n_counts = get_data('../data/Nadelbäume')
-l_trees, l_counts = get_data('../data/Laubbäume')
+n_trees, n_counts = get_data('../data/Nadelbäume', n_points=4096,k=3)
+l_trees, l_counts = get_data('../data/Laubbäume', n_points=4096)
 
 
-label_n = np.repeat("Nadel", 70)
-label_l = np.repeat("Laub", 239)
+label_n = np.repeat("Nadel", np.sum(n_counts))
+label_l = np.repeat("Laub", np.sum(l_counts))
 labels = np.append(label_l, label_n)
 
 
