@@ -119,12 +119,11 @@ for index, row in label_map.iterrows():
         idx = np.random.randint(tree.shape[0], size=NUM_POINTS)
         tree = tree[idx, :]
 
-        trees = np.append(trees, tree)
+        trees = np.vstack((trees, tree[None]))
         labels = np.append(labels, row['species'])
 
-
-lab_bin = LabelBinarizer()
-labels = lab_bin.fit_transform(labels)
+label_dict = {num: lab for lab, num in enumerate(np.unique(labels))}
+labels = np.array([label_dict[i] for i in labels])
 
 
 x_train, x_test, y_train, y_test = train_test_split(trees, labels, test_size=0.3, random_state=41)
