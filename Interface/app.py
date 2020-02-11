@@ -2,6 +2,7 @@ import base64
 import io
 import os
 import numpy as np
+import pandas as pd
 import dash
 from dash import no_update
 from dash.dependencies import Input, Output, State
@@ -23,8 +24,8 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
 
-    html.Div(id='chosen file', children='''
-        Dash: A web application framework for Python.
+    html.H1(id='chosen file', children='''
+        Treedict: 3D Point Cloud Prediction
         '''),
 
     dcc.Upload(
@@ -34,14 +35,13 @@ app.layout = html.Div([
             html.A('Select Files')
         ]),
         style={
-            'width': '100%',
-            'height': '60px',
+            'width': '30%',
+            'height': '10',
             'lineHeight': '60px',
             'borderWidth': '1px',
             'borderStyle': 'dashed',
             'borderRadius': '5px',
             'textAlign': 'center',
-            'margin': '10px'
         },
         # Allow multiple files to be uploaded
         multiple=True
@@ -50,20 +50,27 @@ app.layout = html.Div([
 
     dcc.Dropdown(
         id='choose_model',
+        style={'width': '50%',
+               'marginBottom': '1.5em'},
         options=[
             {'label': i, 'value': i} for i in files
         ],
-        value=''
     ),
-    html.Div(id='dd-output-container'),
 
-    html.Button('Predict', id='button'),
+    dcc.RadioItems(id='prediction',
+                   options=[
+                       {'label': 'prediction', 'value': 'pred'},
+                       {'label': 'probabilities', 'value': 'prob'}
+                   ]),
+
+    html.Button('Predict', id='button',
+                style={
+                    'padding': '10'
+                }),
     html.Div(id='output-container-button',
-             children='Press "Predict" to classify tree')
+             children='Press "Predict" to classify tree',
+             style={'width': '30%'})
 ])
-
-
-
 
 
 def get_array(contents, filename, date):
@@ -83,8 +90,6 @@ def get_array(contents, filename, date):
     return df
 
 
-
-
 @app.callback(Output('Tree', 'src'),
               [Input('upload-data', 'contents')],
               [State('upload-data', 'filename'),
@@ -94,10 +99,12 @@ def plot_tree(list_of_contents, list_of_names, list_of_dates):
         tree = [get_array(c, n, d) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)]
         tree = tree[0]
-        fig = plt.figure()
+        idx = np.random.randint(tree.shape[0], size=6000)
+        tree = tree[idx,:]
+        fig = plt.figure(figsize=(1, 1.5))
         ax = Axes3D(fig)
         plt.axis('off')
-        ax.scatter(tree[:, 0], tree[:, 1], tree[:, 2], s=20, alpha=1, color='black')
+        ax.scatter(tree[:, 0], tree[:, 1], tree[:, 2], s=0.1, alpha=1, color='black')
         fig.savefig('./test.png')
         test_base64 = base64.b64encode(open('./test.png', 'rb').read()).decode('ascii')
         src = 'data:image/png;base64,{}'.format(test_base64)
@@ -108,34 +115,46 @@ def plot_tree(list_of_contents, list_of_names, list_of_dates):
 
 
 @app.callback(
-    Output('dd-output-container', 'children'),
-    [Input('choose_model', 'value')])
-def update_output(value):
-    return 'You have selected "{}"'.format(value)
-
-@app.callback(
     Output('output-container-button', 'children'),
-    [Input('button', 'n_clicks'),
-     Input('choose_model', 'value')]
+    [Input('button', 'n_clicks')],
+    [State('choose_model', 'value'),
+     State('prediction', 'value')]
 )
-def show_file(n_clicks, value):
-    print(value)
-    if n_clicks == 0:
+def show_file(n_clicks, value, prediction):
+    if value == '2Dmodel.h5':
+        classes = ['Laub', 'Nadel']
+
+    else:
+        classes = ['Buche', 'Douglasie', 'Eiche', 'Fichte', 'Kiefer', 'Rotbuche', 'Roteiche']
+
+    if n_clicks == 0 and value == None:
         return no_update
 
     if n_clicks is not None and not os.path.exists('test.png'):
-        return 'Please upload a point cloud'
+            return 'Please upload a point cloud'
 
     if n_clicks is not None and os.path.exists('test.png'):
-        print(n_clicks)
+
         img = app_helper.prep_prediction('test.png')
         model = load_model('models/' + value)
-        pred = model.predict(img)
-        os.remove('test.png')
-        return f'The tree belongs to class {np.argmax(pred)}'
+        pred = model.predict_proba(img).astype('float')
+
+        if prediction == 'pred':
+            return f'The tree belongs to class {classes[np.argmax(pred)]}'
 
 
+        if prediction == 'prob':
 
+            print(str(pred.shape) + '\n\n\n\n')
+            prob_frame = pd.DataFrame(pred, columns=classes)
+            print(prob_frame)
+            print(prob_frame.round(5).to_dict('records'))
+            table = dash_table.DataTable(
+                data=prob_frame.round(5).to_dict('records'),
+                columns=[{'name': i, 'id': i} for i in prob_frame.columns],
+                style_data={'width': '30%'}
+                )
+            return table
 
 
 if __name__ == '__main__':
