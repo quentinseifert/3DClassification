@@ -112,6 +112,8 @@ for index, row in label_map.iterrows():
     if row['file_names'] in file_list:
         path = os.path.join('../data/add_trees', row['file_names'] + '.txt')
         tree = np.genfromtxt(path)
+        if tree.shape[0] < 50000:
+            continue
         tree = tree[~np.isnan(tree).any(axis=1)]
 
         if CUTOFF > 0:
@@ -126,10 +128,10 @@ for index, row in label_map.iterrows():
         labels = np.append(labels, row['species'])
 
 for i in range(0,trees.shape[0]):
-    fig = plt.figure()
+    fig = plt.figure(figsize=(1.5, 2.25))
     ax = Axes3D(fig)
     plt.axis('off')
-    ax.scatter(trees[i,:,0], trees[i,:,1], trees[i,:,2], s=20, alpha=1, color='black')
+    ax.scatter(trees[i,:,0], trees[i,:,1], trees[i,:,2], s=0.1, alpha=1, color='black')
     for ii in range(0, 360, 36):
         ax.view_init(elev=10., azim=ii)
         fig.savefig('Images/' + str(labels[i]) +'/' + '_' + str(i) + '_' + str(labels[i]) + "%d.png" % ii)
