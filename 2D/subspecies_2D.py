@@ -49,6 +49,22 @@ num_classes = 7
 x_test = x_test/255
 x_train = x_train/255
 
+
+labs = []
+for lab in y_train:
+    labs.append(np.argmax(lab))
+
+labs = np.array(labs)
+
+idx_eiche = np.argwhere(labs == 2)
+idx_esche = np.argwhere(labs == 3)
+idx_kiefer = np.argwhere(labs == 4)
+
+idx = np.concatenate(idx_eiche, idx_esche, idx_kiefer)
+
+x_small = x_train[idx, :, :, :]
+
+
 rotate = ImageDataGenerator(rotation_range=15)
 rotate.fit(x_train)
 
