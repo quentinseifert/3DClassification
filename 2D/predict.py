@@ -60,9 +60,9 @@ from keras.models import load_model
 
 
 
-model = load_model('2D_subspecies_model_augment1.h5')
+model = load_model('sub_model_test.h5')
 
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics = ['accuracy'])
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics =['accuracy'])
 
 images_test = ImageDataGenerator().flow_from_directory('Test_Images', target_size=(225, 150),
                                                   classes=['Buche', 'Douglasie', 'Eiche', 'Esche', 'Fichte', 'Kiefer',
@@ -77,7 +77,7 @@ x_test, y_test = next(images_test)
 
 x_test = x_test/255
 
-x_test = x_test[:, 40:175, 20:120, :]
+x_test = x_test[:, 30:180, 20:120, :]
 loss, acc = model.evaluate(x_test, y_test)
 print(acc)
 
@@ -98,7 +98,7 @@ print(sum(y_test==1))
 
 con_mat = tf.math.confusion_matrix(labels=y_test, predictions=y_pred).numpy()
 
-classes=['Buche', 'Douglasie', 'Eiche', 'Esche', 'Fichte', 'Kiefer', 'Roteiche']
+classes=['Beeche', 'Douglas fur', 'Oak', 'Ash', 'Spruce', 'Pine', 'Red oak']
 
 con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
 
