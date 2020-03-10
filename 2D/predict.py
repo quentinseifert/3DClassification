@@ -16,6 +16,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 import os
 from sklearn.preprocessing import LabelBinarizer
+from keras.utils.vis_utils import plot_model
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 
@@ -113,4 +114,6 @@ plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
 
+
+plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
