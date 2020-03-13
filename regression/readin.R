@@ -5,7 +5,7 @@
 # in order to create a list which includes the datafile names:
 # at first one has to setwd() to the MAIN file which includes the
 # SUB files ->  setwd(".../Laubbäume"). In the list.files command
-# one has to specifie which sub file he wants to adress -> "Hainbuche"
+# one has to specify which sub file he wants to adress -> "Hainbuche"
 # for example. After one has listet every datafile name in a list, 
 # one hase to change the working directory again. This time
 # NOT to the main file but to the SUB file -> setwd("../Laubbäume/Hainbuche")
@@ -248,7 +248,7 @@ for (i in 1:length(datahainbuche)) {
 ################################################################################
 ################################################################################
 ################################################################################
-## decidious trees :
+## coniferous trees :
 
 ################################################################################
 ## douglasie :
