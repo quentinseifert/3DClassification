@@ -64,23 +64,3 @@ legend(x = 0, y = 10, col=c("blue","red"),  legend = c("beech","spruce"), pch = 
 
 ####################################################################
 
-setwd("C:\\Users\\User\\Desktop\\Trees for KI\\Laubbäume\\Buche")
-Buexample <- read.table("Bu6.xyz", header = FALSE)
-
-set.seed(100)
-abc<-sample(1:length(Buexample$V1),5000) 
-Buexample <- Buexample[abc,c(1,2)]
-
-speicher <-dist(Buexample)
-which.max(speicher)
-
-plot(Buexample$V1[abc],Buexample$V2[abc])
-
-
-
-
-
-
-
-
-

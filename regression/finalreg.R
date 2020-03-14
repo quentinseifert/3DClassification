@@ -22,9 +22,8 @@ Z <- as.data.frame(Z)
 #########################################################################################
 #glm-logit model
 
-myglm1.1<-glm(species ~ diameter, data = Z, family = binomial(link
-                                                              ="logit"))
-summary(myglm1.1)
+#myglm1.1<-glm(species ~ diameter, data = Z, family = binomial(link ="logit"))
+#summary(myglm1.1)
 
 # classifying 
 # split into test and training set
